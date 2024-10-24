@@ -1,5 +1,6 @@
 ﻿using HRRecruitmentSystem.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace HRRecruitmentSystem.Data
 {
@@ -10,5 +11,7 @@ namespace HRRecruitmentSystem.Data
         public DbSet<Candidate> Candidates { get; set; }
         public DbSet<Vacancy> Vacancies { get; set; }
         public DbSet<HR> HrSpecialists { get; set; }
+
+        public DbSet<LogEntry> Logs { get; set; }
     }
 }

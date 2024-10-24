@@ -42,6 +42,8 @@ namespace HRRecruitmentSystem
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<RecruitmentDbContext>();
                 dbContext.Database.EnsureCreated(); // Создание базы данных, если она ещё не существует
+                // Применяем миграции при старте приложения
+                dbContext.Database.Migrate();
             }
 
             app.Run();
