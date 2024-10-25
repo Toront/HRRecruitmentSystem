@@ -1,6 +1,8 @@
 using HRRecruitmentSystem.Data;
 using HRRecruitmentSystem.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 namespace HRRecruitmentSystem
 {
@@ -8,15 +10,13 @@ namespace HRRecruitmentSystem
     {
         public static void Main(string[] args)
         {
-            // Настройка NLog
             var logger = NLog.Web.NLogBuilder.ConfigureNLog("nlog.config").GetCurrentClassLogger();
+
             try
             {
                 logger.Debug("Initiating application...");
 
                 var builder = WebApplication.CreateBuilder(args);
-
-                // Add services to the container.
 
                 // Настройка контекста базы данных с SQLite
                 builder.Services.AddDbContext<RecruitmentDbContext>(options =>
@@ -24,15 +24,41 @@ namespace HRRecruitmentSystem
 
                 builder.Services.AddControllers();
                 builder.Services.AddEndpointsApiExplorer();
-                builder.Services.AddSwaggerGen();
 
-                // Регистрация сервиса подбора кадров
+                // Настройка Swagger
+                builder.Services.AddSwaggerGen(c =>
+                {
+                    c.SwaggerDoc("v1", new OpenApiInfo
+                    {
+                        Title = "HR Recruitment System API",
+                        Version = "v1",
+                        Description = "API для управления процессом подбора кадров в HR Recruitment System.",
+                        Contact = new OpenApiContact
+                        {
+                            Name = "Frolov Sergei",
+                            Url = new Uri("https://github.com/Toront"),
+                            Email = "email@example.com"
+                        },
+                        License = new OpenApiLicense
+                        {
+                            Name = "MIT License",
+                            Url = new Uri("https://opensource.org/licenses/MIT")
+                        }
+                    });
+
+                    // ПолучениеAssembly и указание пути к XML-документации
+                    var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                    c.IncludeXmlComments(xmlPath);
+                });
+
+                // Регистрация сервисов
                 builder.Services.AddScoped<RecruitmentService>();
-                builder.Services.AddTransient<LogService>(); // Регистрация сервиса логирования
+                builder.Services.AddTransient<LogService>();
 
                 var app = builder.Build();
 
-                // Configure the HTTP request pipeline.
+                // Настройка HTTP-пайплайна
                 if (app.Environment.IsDevelopment())
                 {
                     app.UseSwagger();
@@ -41,15 +67,13 @@ namespace HRRecruitmentSystem
 
                 app.UseHttpsRedirection();
                 app.UseAuthorization();
-
                 app.MapControllers();
 
                 // Создание базы данных и применение миграций при первом запуске
                 using (var scope = app.Services.CreateScope())
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<RecruitmentDbContext>();
-                    dbContext.Database.EnsureCreated(); // Создание базы данных, если она ещё не существует
-                    // Применяем миграции при старте приложения
+                    dbContext.Database.EnsureCreated();
                     dbContext.Database.Migrate();
                 }
 

@@ -17,6 +17,13 @@ namespace HRRecruitmentSystem.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Добавляет новую вакансию в систему.
+        /// </summary>
+        /// <param name="vacancy">Детали вакансии.</param>
+        /// <returns>Возвращает созданную вакансию.</returns>
+        /// <response code="201">Вакансия успешно добавлена.</response>
+        /// <response code="400">Ошибка при добавлении вакансии.</response>
         [HttpPost("vacancy")]
         public IActionResult AddVacancy([FromBody] Vacancy vacancy)
         {
@@ -33,6 +40,14 @@ namespace HRRecruitmentSystem.Controllers
             }
         }
 
+        /// <summary>
+        /// Позволяет кандидату подать резюме на вакансию.
+        /// </summary>
+        /// <param name="vacancyId">ID вакансии, на которую подается резюме.</param>
+        /// <param name="candidate">Детали кандидата.</param>
+        /// <returns>Возвращает статус операции.</returns>
+        /// <response code="200">Резюме успешно подано.</response>
+        /// <response code="400">Ошибка при подаче резюме.</response>
         [HttpPost("resume/{vacancyId}")]
         public IActionResult SubmitResume(int vacancyId, [FromBody] Candidate candidate)
         {
@@ -49,6 +64,13 @@ namespace HRRecruitmentSystem.Controllers
             }
         }
 
+        /// <summary>
+        /// Проводит собеседование с кандидатом.
+        /// </summary>
+        /// <param name="candidateId">ID кандидата, с которым проводится собеседование.</param>
+        /// <returns>Возвращает статус операции.</returns>
+        /// <response code="200">Собеседование успешно проведено.</response>
+        /// <response code="400">Ошибка при проведении собеседования.</response>
         [HttpPost("interview/{candidateId}")]
         public IActionResult ConductInterview(int candidateId)
         {
@@ -65,6 +87,14 @@ namespace HRRecruitmentSystem.Controllers
             }
         }
 
+        /// <summary>
+        /// Проверяет результаты тестирования кандидата.
+        /// </summary>
+        /// <param name="candidateId">ID кандидата.</param>
+        /// <param name="isPassed">Флаг, указывающий, прошел ли кандидат тест.</param>
+        /// <returns>Возвращает статус операции.</returns>
+        /// <response code="200">Результаты теста успешно проверены.</response>
+        /// <response code="400">Ошибка при проверке результатов теста.</response>
         [HttpPost("review/{candidateId}")]
         public IActionResult ReviewTestResults(int candidateId, bool isPassed)
         {
